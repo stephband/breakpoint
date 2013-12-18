@@ -24,6 +24,6 @@ Respond to media and scrolling breakpoints.
 <code>exitFn</code> is called whenever the window is resized or scrolled and the conditions in the <code>query</code> become false.
 
 
-## Dependencies
+### Dependencies
 
 Currently depends on jQuery, but this is an easy dependency to remove, so will probably do that.
