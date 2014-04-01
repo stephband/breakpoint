@@ -10,15 +10,15 @@ Respond to media and scrolling breakpoints.
         maxScroll: 400
     };
     
-    function enter() {
+    function enterFn() {
         console.log('ENTER');
     }
     
-    function exit() {
+    function exitFn() {
         console.log('EXIT');
     }
     
-    window.breakpoint(query, enterFn, exitFn)
+    window.breakpoint(query, enterFn, exitFn);
 
 <code>enterFn</code> is now called whenever the window is resized or scrolled and the conditions in the <code>query</code> become true.
 <code>exitFn</code> is called whenever the window is resized or scrolled and the conditions in the <code>query</code> become false.
