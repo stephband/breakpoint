@@ -56,7 +56,7 @@
 		if (rule.maxScroll && scrollTop >= rule.maxScroll) { return false; }
 		if (rule.minHeight && height <  rule.minHeight) { return false; }
 		if (rule.maxHeight && height >= rule.maxHeight) { return false; }
-		
+
 		return true;
 	}
 
@@ -93,8 +93,8 @@
 	}
 
 	function resize(e) {
-		width = document.documentElement.clientWidth;
-		height = document.documentElement.clientHeight;
+		width = window.innerWidth;
+		height = window.innerHeight;
 		update();
 	}
 
@@ -105,7 +105,8 @@
 	doc
 	.on('DOMContentLoaded', update);
 
-	width = document.documentElement.clientWidth;
+	width = window.innerWidth;
+	height = window.innerHeight;
 	scrollTop = win.scrollTop();
 
 	window.breakpoint = media;
