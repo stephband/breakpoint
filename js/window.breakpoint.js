@@ -67,7 +67,7 @@
 		// Run exiting rules
 		while (l--) {
 			rule = rules[l];
-			console.log('––', rule.state, test(rule), rule);
+
 			if (rule.state && !test(rule)) {
 				rule.state = false;
 				rule.exit();
