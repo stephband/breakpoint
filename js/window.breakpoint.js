@@ -1,5 +1,6 @@
 (function(jQuery, window) {
 	var win = jQuery(window);
+	var doc = jQuery(document);
 	var fontSize = 16;
 	var rules = [];
 	var rem = /(\d*\.?\d+)r?em/;
@@ -44,12 +45,10 @@
 			enter: fn1,
 			exit: fn2
 		};
-		
-		rule.state = test(rule);
+
 		rules.push(rule);
-		rule.state ? rule.enter() : rule.exit();
 	}
-	
+
 	function test(rule) {
 		if (rule.minWidth && width <  rule.minWidth) { return false; }
 		if (rule.maxWidth && width >= rule.maxWidth) { return false; }
@@ -60,47 +59,53 @@
 		
 		return true;
 	}
-	
+
 	function update() {
 		var l = rules.length;
 		var rule;
-		
+
+		// Run exiting rules
 		while (l--) {
 			rule = rules[l];
 			
-			if (rule.state) {
-				if (!test(rule)) {
-					rule.state = false;
-					rule.exit();
-					return;
-				}
+			if (rule.state && !test(rule)) {
+				rule.state = false;
+				rule.exit();
 			}
-			else {
-				if (test(rule)) {
-					rule.state = true;
-					rule.enter();
-					return;
-				}
+		}
+
+		l = rules.length;
+
+		// Run entering rules
+		while (l--) {
+			rule = rules[l];
+
+			if (!rule.state && test(rule)) {
+				rule.state = true;
+				rule.enter();
 			}
 		}
 	}
-	
+
 	function scroll(e) {
 		scrollTop = win.scrollTop();
 		update();
 	}
-	
+
 	function resize(e) {
 		width = document.documentElement.clientWidth;
 		update();
 	}
-	
+
 	win
 	.on('scroll', scroll)
 	.on('resize', resize);
 	
+	doc
+	.on('DOMContentLoaded', update);
+
 	width = document.documentElement.clientWidth;
 	scrollTop = win.scrollTop();
-	
+
 	window.breakpoint = media;
 })(jQuery, window);
