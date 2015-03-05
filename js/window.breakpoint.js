@@ -5,7 +5,7 @@
 	var rules = [];
 	var rem = /(\d*\.?\d+)r?em/;
 	var rpercent = /(\d*\.?\d+)%/;
-	var width, height, scrollTop;
+	var width, height, scrollTop, scrollHeight;
 
 	function getStyle(node, name) {
 		return window.getComputedStyle ?
@@ -21,41 +21,55 @@
 	}
 
 	function parse(query) {
-		var data;
+		var data, n;
 
-		if (typeof query === 'number') { return query; }
+		if (typeof query === 'number') {
+			return function numberQuery() { return query; };
+		}
 
-		data = rem.exec(query);
-		if (data) { return getFontSize() * parseFloat(data[1]); }
+		if (typeof query === 'string') {
+			data = rem.exec(query);
+			if (data) {
+				n = parseFloat(data[1]);
+				return function remQuery() { return getFontSize() * n; }
+			}
 
-		data = rpercent.exec(query);
-		if (data) { return width * parseFloat(data[1]) / 100; }
+			data = rpercent.exec(query);
+			if (data) {
+				n = parseFloat(data[1]) / 100;
+				return function percentQuery() { return width * n; }
+			}
 
-		throw new Error('[window.breakpoint] \'' + query + '\' cannot be parsed.');
+			throw new Error('[window.breakpoint] \'' + query + '\' cannot be parsed.');
+		}
+
+		// Assume query is a function
+		return query;
 	}
 
 	function media(query, fn1, fn2) {
-		var rule = {
-			minWidth:  query.minWidth  && parse(query.minWidth),
-			maxWidth:  query.maxWidth  && parse(query.maxWidth),
-			minScroll: query.minScroll && parse(query.minScroll),
-			maxScroll: query.maxScroll && parse(query.maxScroll),
-			minHeight: query.minHeight && parse(query.minHeight),
-			maxHeight: query.maxHeight && parse(query.maxHeight),
-			enter: fn1,
-			exit: fn2
-		};
+		var rule = {};
+		var key;
 
+		for (key in query) {
+			if (!query.hasOwnProperty(key)) { continue; }
+			rule[key] = parse(query[key]);
+		}
+
+		rule.enter = fn1;
+		rule.exit = fn2;
 		rules.push(rule);
 	}
 
 	function test(rule) {
-		if (rule.minWidth && width <  rule.minWidth) { return false; }
-		if (rule.maxWidth && width >= rule.maxWidth) { return false; }
-		if (rule.minScroll && scrollTop <  rule.minScroll) { return false; }
-		if (rule.maxScroll && scrollTop >= rule.maxScroll) { return false; }
-		if (rule.minHeight && height <  rule.minHeight) { return false; }
-		if (rule.maxHeight && height >= rule.maxHeight) { return false; }
+		if (rule.minWidth        && width <  rule.minWidth()) { return false; }
+		if (rule.maxWidth        && width >= rule.maxWidth()) { return false; }
+		if (rule.minHeight       && height <  rule.minHeight()) { return false; }
+		if (rule.maxHeight       && height >= rule.maxHeight()) { return false; }
+		if (rule.minScrollTop    && scrollTop <  rule.minScrollTop()) { return false; }
+		if (rule.maxScrollTop    && scrollTop >= rule.maxScrollTop()) { return false; }
+		if (rule.minScrollBottom && (scrollHeight - height - scrollTop) <  rule.minScrollBottom()) { return false; }
+		if (rule.maxScrollBottom && (scrollHeight - height - scrollTop) >= rule.maxScrollBottom()) { return false; }
 
 		return true;
 	}
@@ -88,13 +102,14 @@
 	}
 
 	function scroll(e) {
-		scrollTop = win.scrollTop();
+		scrollTop = document.documentElement.scrollTop || document.body.scrollTop;;
 		update();
 	}
 
 	function resize(e) {
 		width = window.innerWidth;
 		height = window.innerHeight;
+		scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
 		update();
 	}
 
@@ -107,7 +122,8 @@
 
 	width = window.innerWidth;
 	height = window.innerHeight;
-	scrollTop = win.scrollTop();
+	scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+	scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
 
 	window.breakpoint = media;
 })(jQuery, window);

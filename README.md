@@ -6,18 +6,18 @@ Respond to media and scrolling breakpoints.
     var query = {
         minWidth: '32em',
         maxWidth: 1024,
-        minScroll: 0,
-        maxScroll: 400
+        minScrollTop: 0,
+        maxScrollTop: 400
     };
-    
+
     function enterFn() {
         console.log('ENTER');
     }
-    
+
     function exitFn() {
         console.log('EXIT');
     }
-    
+
     window.breakpoint(query, enterFn, exitFn);
 
 <code>enterFn</code> is now called whenever the window is resized or scrolled and the conditions in the <code>query</code> become true.
