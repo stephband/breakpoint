@@ -5,8 +5,8 @@
 	var rules = [];
 	var rem = /(\d*\.?\d+)r?em/;
 	var rpercent = /(\d*\.?\d+)%/;
-	var width, height, scrollTop, fontSize;
-	
+	var width, height, scrollTop;
+
 	function getStyle(node, name) {
 		return window.getComputedStyle ?
 			window
@@ -22,18 +22,18 @@
 
 	function parse(query) {
 		var data;
-		
+
 		if (typeof query === 'number') { return query; }
-		
+
 		data = rem.exec(query);
 		if (data) { return getFontSize() * parseFloat(data[1]); }
-		
+
 		data = rpercent.exec(query);
 		if (data) { return width * parseFloat(data[1]) / 100; }
-		
+
 		throw new Error('[window.breakpoint] \'' + query + '\' cannot be parsed.');
 	}
-	
+
 	function media(query, fn1, fn2) {
 		var rule = {
 			minWidth:  query.minWidth  && parse(query.minWidth),
@@ -101,7 +101,7 @@
 	win
 	.on('scroll', scroll)
 	.on('resize', resize);
-	
+
 	doc
 	.on('DOMContentLoaded', update);
 
