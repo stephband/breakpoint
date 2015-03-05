@@ -120,6 +120,7 @@
 	.on('resize', resize);
 
 	doc
+	.ready(update)
 	.on('DOMContentLoaded', update);
 
 	width = window.innerWidth;
