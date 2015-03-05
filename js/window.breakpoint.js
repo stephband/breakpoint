@@ -1,4 +1,6 @@
 (function(jQuery, window) {
+	"use strict";
+
 	var win = jQuery(window);
 	var doc = jQuery(document);
 	var fontSize = 16;
@@ -31,13 +33,13 @@
 			data = rem.exec(query);
 			if (data) {
 				n = parseFloat(data[1]);
-				return function remQuery() { return getFontSize() * n; }
+				return function remQuery() { return getFontSize() * n; };
 			}
 
 			data = rpercent.exec(query);
 			if (data) {
 				n = parseFloat(data[1]) / 100;
-				return function percentQuery() { return width * n; }
+				return function percentQuery() { return width * n; };
 			}
 
 			throw new Error('[window.breakpoint] \'' + query + '\' cannot be parsed.');
