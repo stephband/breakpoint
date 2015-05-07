@@ -23,7 +23,16 @@ Respond to media and scrolling breakpoints.
 <code>enterFn</code> is now called whenever the window is resized or scrolled and the conditions in the <code>query</code> become true.
 <code>exitFn</code> is called whenever the window is resized or scrolled and the conditions in the <code>query</code> become false.
 
-All properties of the query are optional.
+All properties of the query are optional:
+
+    minWidth
+    maxWidth
+    minHeight
+    maxHeight
+    minScrollTop
+    maxScrollTop
+    minScrollBottom
+    maxScrollBottom
 
 
 ### Dependencies
