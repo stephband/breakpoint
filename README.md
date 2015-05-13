@@ -44,6 +44,9 @@ The return value of the function should be a number representing a pixel distanc
         }
     };
 
+Be warned that queries are run on every <code>scroll</code> and <code>resize</code> event.
+Don't make them expensive.
+
 ### Dependencies
 
 Currently depends on jQuery, but this is an easy dependency to remove, so will probably do that.
