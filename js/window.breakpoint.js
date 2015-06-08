@@ -104,7 +104,7 @@
 	}
 
 	function scroll(e) {
-		scrollTop = document.documentElement.scrollTop || document.body.scrollTop;;
+		scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
 		update();
 	}
 
