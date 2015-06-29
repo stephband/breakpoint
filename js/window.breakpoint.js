@@ -86,7 +86,7 @@
 
 			if (rule.state && !test(rule)) {
 				rule.state = false;
-				rule.exit();
+				rule.exit && rule.exit();
 			}
 		}
 
@@ -98,7 +98,7 @@
 
 			if (!rule.state && test(rule)) {
 				rule.state = true;
-				rule.enter();
+				rule.enter && rule.enter();
 			}
 		}
 	}
