@@ -3,11 +3,45 @@
 
 	var win = jQuery(window);
 	var doc = jQuery(document);
-	var fontSize = 16;
 	var rules = [];
 	var rem = /(\d*\.?\d+)r?em/;
 	var rpercent = /(\d*\.?\d+)%/;
-	var width, height, scrollTop, scrollHeight;
+	var width, height, scrollTop, scrollHeight, fontSize;
+
+	var types = {
+		number: function(n) { return n; },
+
+		function: function(fn) { return fn(); },
+
+		string: function(string) {
+			var data, n;
+
+			data = rem.exec(value);
+			if (data) {
+				n = parseFloat(data[1]);
+				return getFontSize() * n;
+			}
+
+			data = rpercent.exec(value);
+			if (data) {
+				n = parseFloat(data[1]) / 100;
+				return width * n;
+			}
+
+			throw new Error('[window.breakpoint] \'' + value + '\' cannot be parsed as rem, em or %.');
+		}
+	};
+
+	var tests = {
+		minWidth: function(value)  { return width >= types[typeof value](value); },
+		maxWidth: function(value)  { return width <  types[typeof value](value); },
+		minHeight: function(value) { return height >= types[typeof value](value); },
+		maxHeight: function(value) { return height <  types[typeof value](value); },
+		minScrollTop: function(value) { return scrollTop >= types[typeof value](value); },
+		maxScrollTop: function(value) { return scrollTop <  types[typeof value](value); },
+		minScrollBottom: function(value) { return (scrollHeight - height - scrollTop) >= types[typeof value](value); },
+		maxScrollBottom: function(value) { return (scrollHeight - height - scrollTop) <  types[typeof value](value); }
+	};
 
 	function getStyle(node, name) {
 		return window.getComputedStyle ?
@@ -19,59 +53,31 @@
 
 	function getFontSize() {
 		return fontSize ||
-			(fontSize = parseInt(getStyle(document.documentElement, "font-size"), 10));
-	}
-
-	function parse(query) {
-		var data, n;
-
-		if (typeof query === 'number') {
-			return function numberQuery() { return query; };
-		}
-
-		if (typeof query === 'string') {
-			data = rem.exec(query);
-			if (data) {
-				n = parseFloat(data[1]);
-				return function remQuery() { return getFontSize() * n; };
-			}
-
-			data = rpercent.exec(query);
-			if (data) {
-				n = parseFloat(data[1]) / 100;
-				return function percentQuery() { return width * n; };
-			}
-
-			throw new Error('[window.breakpoint] \'' + query + '\' cannot be parsed.');
-		}
-
-		// Assume query is a function
-		return query;
+			(fontSize = parseFloat(getStyle(document.documentElement, "font-size"), 10));
 	}
 
 	function media(query, fn1, fn2) {
 		var rule = {};
+
+		rule.query = query;
+		rule.enter = fn1;
+		rule.exit = fn2;
+		rules.push(rule);
+
+		return query;
+	}
+
+	function testProperty(property, value) {
+		cutoffs[property]
+	}
+
+	function test(query) {
 		var key;
 
 		for (key in query) {
 			if (!query.hasOwnProperty(key)) { continue; }
-			rule[key] = parse(query[key]);
+			if (!tests[key](query[key])) { return false; }
 		}
-
-		rule.enter = fn1;
-		rule.exit = fn2;
-		rules.push(rule);
-	}
-
-	function test(rule) {
-		if (rule.minWidth        && width <  rule.minWidth()) { return false; }
-		if (rule.maxWidth        && width >= rule.maxWidth()) { return false; }
-		if (rule.minHeight       && height <  rule.minHeight()) { return false; }
-		if (rule.maxHeight       && height >= rule.maxHeight()) { return false; }
-		if (rule.minScrollTop    && scrollTop <  rule.minScrollTop()) { return false; }
-		if (rule.maxScrollTop    && scrollTop >= rule.maxScrollTop()) { return false; }
-		if (rule.minScrollBottom && (scrollHeight - height - scrollTop) <  rule.minScrollBottom()) { return false; }
-		if (rule.maxScrollBottom && (scrollHeight - height - scrollTop) >= rule.maxScrollBottom()) { return false; }
 
 		return true;
 	}
@@ -84,7 +90,7 @@
 		while (l--) {
 			rule = rules[l];
 
-			if (rule.state && !test(rule)) {
+			if (rule.state && !test(rule.query)) {
 				rule.state = false;
 				rule.exit && rule.exit();
 			}
@@ -96,7 +102,7 @@
 		while (l--) {
 			rule = rules[l];
 
-			if (!rule.state && test(rule)) {
+			if (!rule.state && test(rule.query)) {
 				rule.state = true;
 				rule.enter && rule.enter();
 			}
