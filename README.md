@@ -34,8 +34,9 @@ All properties of the query are optional:
     minScrollBottom
     maxScrollBottom
 
-Query parameters can also be made dynamic by expressing them as functions.
-The return value of the function should be a number representing a pixel distance.
+Query parameters can be numbers, which represent pixels, strings of the form
+'<i>n</i>em', '<i>n</i>rem' or '<i>n</i>%', or functions. The return value of a
+function should be a number representing a pixel distance.
 
     var query = {
         minWidth: function() {
@@ -44,8 +45,10 @@ The return value of the function should be a number representing a pixel distanc
         }
     };
 
-Be warned that queries are run on every <code>scroll</code> and <code>resize</code> event.
-Don't make them expensive.
+Be warned that query functions are run on every <code>scroll</code> and
+<code>resize</code> event. Don't make them expensive.
+
+Query parameters may be reassigned at any time.
 
 ### Dependencies
 
