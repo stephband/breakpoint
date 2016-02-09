@@ -72,10 +72,14 @@
 	}
 
 	function test(query) {
+		var keys = Object.keys(query);
+		var n = keys.length;
 		var key;
 
-		for (key in query) {
-			if (!query.hasOwnProperty(key)) { continue; }
+		if (keys.length === 0) { return false; }
+
+		while (n--) {
+			key = keys[n];
 			if (!tests[key](query[key])) { return false; }
 		}
 
