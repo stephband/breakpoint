@@ -16,19 +16,19 @@
 		string: function(string) {
 			var data, n;
 
-			data = rem.exec(value);
+			data = rem.exec(string);
 			if (data) {
 				n = parseFloat(data[1]);
 				return getFontSize() * n;
 			}
 
-			data = rpercent.exec(value);
+			data = rpercent.exec(string);
 			if (data) {
 				n = parseFloat(data[1]) / 100;
 				return width * n;
 			}
 
-			throw new Error('[window.breakpoint] \'' + value + '\' cannot be parsed as rem, em or %.');
+			throw new Error('[window.breakpoint] \'' + string + '\' cannot be parsed as rem, em or %.');
 		}
 	};
 
