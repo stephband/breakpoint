@@ -61,10 +61,15 @@
 
 		rule.query = query;
 		rule.enter = fn1;
-		rule.exit = fn2;
+		rule.exit  = fn2;
 		rules.push(rule);
 
 		return query;
+
+		// Or as a stream...
+		var stream = Stream();
+		rule.stream = stream;
+		return stream;
 	}
 
 	function testProperty(property, value) {
@@ -86,31 +91,43 @@
 		return true;
 	}
 
+	function exit(rule) {
+		rule.state = false;
+		if (rule.stream) { stream.push(rule.state); }
+		else { rule.exit && rule.exit(); }
+	}
+
+	function enter(rule) {
+		rule.state = true;
+		if (rule.stream) { stream.push(rule.state); }
+		else { rule.enter && rule.enter(); }
+	}
+
 	function update() {
 		var l = rules.length;
 		var rule;
+		var exiting  = [];
+		var entering = [];
 
-		// Run exiting rules
+		// Divide rules into exiting and entering rules.
 		while (l--) {
 			rule = rules[l];
 
-			if (rule.state && !test(rule.query)) {
-				rule.state = false;
-				rule.exit && rule.exit();
+			if (rule.state) {
+				if (!test(rule.query)) {
+					exiting.push(rule);
+				}
+			}
+			else {
+				if (test(rule.query)) {
+					entering.push(rule);
+				}
 			}
 		}
 
-		l = rules.length;
-
-		// Run entering rules
-		while (l--) {
-			rule = rules[l];
-
-			if (!rule.state && test(rule.query)) {
-				rule.state = true;
-				rule.enter && rule.enter();
-			}
-		}
+		// Run exiting rules before entering rules
+		exiting.forEach(exit);
+		entering.forEach(enter);
 	}
 
 	function scroll(e) {
