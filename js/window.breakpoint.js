@@ -67,10 +67,6 @@
 		return query;
 	}
 
-	function testProperty(property, value) {
-		cutoffs[property]
-	}
-
 	function test(query) {
 		var keys = Object.keys(query);
 		var n = keys.length;
