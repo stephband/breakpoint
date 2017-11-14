@@ -1,8 +1,7 @@
-(function(jQuery, window) {
+(function(window) {
 	"use strict";
 
-	var win = jQuery(window);
-	var doc = jQuery(document);
+	var dom = window.dom;
 	var rules = [];
 	var rem = /(\d*\.?\d+)r?em/;
 	var rpercent = /(\d*\.?\d+)%/;
@@ -110,29 +109,25 @@
 	}
 
 	function scroll(e) {
-		scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+		scrollTop = dom.view.scrollTop;
 		update();
 	}
 
 	function resize(e) {
 		width = window.innerWidth;
 		height = window.innerHeight;
-		scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+		scrollHeight = dom.view.scrollHeight;
 		update();
 	}
 
-	win
-	.on('scroll', scroll)
-	.on('resize', resize);
-
-	doc
-	.ready(update)
-	.on('DOMContentLoaded', update);
+	dom.event('scroll', window).each(scroll);
+	dom.event('resize', window).each(scroll);
+	dom.ready(update);
 
 	width = window.innerWidth;
 	height = window.innerHeight;
-	scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
-	scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight;
+	scrollTop = dom.view.scrollTop;
+	scrollHeight = dom.view.scrollHeight;
 
 	window.breakpoint = media;
-})(jQuery, window);
+})(this);
