@@ -120,8 +120,8 @@
 		update();
 	}
 
-	dom.event('scroll', window).each(scroll);
-	dom.event('resize', window).each(scroll);
+	dom.events('scroll', window).each(scroll);
+	dom.events('resize', window).each(scroll);
 	dom.ready(update);
 
 	width = window.innerWidth;
